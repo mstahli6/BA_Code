@@ -51,10 +51,10 @@ def main():
     BA species data.  It also has a built in filtering function that can be applied or not as needed.  Multiple site
     outputs can be produced at the same time.
     """
-    data_parameters = WindReadyConstants(file_path=r'E:/IDAT', sites=['LUR'],
-                                         species='ethane', start_time='2022-01-01 00:00:00',
-                                         end_time='2022-03-31 23:59:00', wsp_filter=1, methane_match=True,
-                                         zero_filter=True, export_dir='E:\Ready for wind plot dir')
+    data_parameters = WindReadyConstants(file_path=r'E:/IDAT', sites=['BRZ'],
+                                         species='ch4', start_time='2017-06-08 00:00:00',
+                                         end_time='2022-07-11 00:0:00', wsp_filter=0, methane_match=False,
+                                         zero_filter=False, export_dir='E:\Ready for wind plot dir')
     # ending dates of each quarter: q1: 03-31 23:59:00, q2: 06-30 23:59:00,
     # q3: 09-30 23:59:00, q4: 12-31 23:59:00,
 
@@ -98,6 +98,8 @@ def main():
         combine_data = met_voc_combine_func(data_parameters, wind_list, data_list)
 
     else:
+        print(wind_list)
+        print(data_list)
         # combine non-voc species with met data
         combine_data = met_non_voc_combine_func(data_parameters, wind_list, data_list)
 

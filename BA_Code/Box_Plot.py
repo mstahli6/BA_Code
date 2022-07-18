@@ -27,7 +27,7 @@ class BoxPlotConstants:
         End time as a string in datetime format (EX '2020-08-28 05:00:00')
     """
 
-    def __init__(self, file_path, sites, species, plot_type, bin_time_interval, start_time, end_time):
+    def __init__(self, file_path, sites, species, plot_type, bin_time_interval, start_time, end_time, zero_filter):
         self.file_path = file_path
         self.sites = sites
         self.species = species
@@ -35,6 +35,7 @@ class BoxPlotConstants:
         self.bin_time_interval = bin_time_interval
         self.start_time = start_time
         self.end_time = end_time
+        self.zero_filter = zero_filter
 
 
 def diurnal_comparison_func(data_list, data_parameters):
@@ -75,6 +76,10 @@ def diurnal_comparison_func(data_list, data_parameters):
     # create list with 'night' or 'day' values. day == 8am-8pm (inclusive), night == 9pm to 7am (inclusive)
     data['diurnal'] = night_day_list
     # add new diurnal list to df as a column
+
+    if data_parameters.zero_filter:
+        data = box_zero_filter_func(data)
+    # replaces 0's and - values in df with NaN's if zero_filter parameter is set to true
 
     TITLE_TIME = time_title_func(data_parameters.start_time, data_parameters.end_time)
     # formats time interval to be used in title
@@ -127,6 +132,10 @@ def custom_time_comparison_func(data_list, data_parameters):
     data = interval_binning_func(data, data_parameters.bin_time_interval)
     # bins data['time'] column into new time interval EX: months
 
+    if data_parameters.zero_filter:
+        data = box_zero_filter_func(data)
+    # replaces 0's and - values in df with NaN's if zero_filter parameter is set to true
+
     TITLE_TIME = time_title_func(data_parameters.start_time, data_parameters.end_time)
     # formats time interval to be used in title
 
@@ -178,6 +187,10 @@ def quarterly_report_box_plot_func(data_list, data_parameters):
 
     data = df_timeloc_func(data, data_parameters.start_time, data_parameters.end_time)
     # locks data into specified time interval
+
+    if data_parameters.zero_filter:
+        data = box_zero_filter_func(data)
+    # replaces 0's and - values in df with NaN's if zero_filter parameter is set to true
 
     data = interval_binning_func(data, data_parameters.bin_time_interval)
     # bins data['time'] column into new time interval EX: months
@@ -236,6 +249,10 @@ def quarterly_report_box_plot_func(data_list, data_parameters):
     data = data.loc[(data['month'] >= good_months[0]) & (data['month'] <= good_months[-1])]
     # loc the data frame to only include months in the wanted quarter
 
+    if data_parameters.zero_filter:
+        data = box_zero_filter_func(data)
+    # replaces 0's and - values in df with NaN's if zero_filter parameter is set to true
+
     PALETTE = [COLOR_DICT[data_parameters.sites[0]]]
     # sets box colors to site colors
 
@@ -260,9 +277,10 @@ def main():
     'month', 'week', 'day', or 'all time'.  Lastly imput your start_time and end_time as a str:
     start_time='2022-02-01 00:00:00', end_time='2022-06-06 00:00:00'.
     """
-    data_parameters = BoxPlotConstants(file_path=r'E:/IDAT', sites=['LUR', 'ECC'],
-                                       species='benzene', plot_type='quarterly report', bin_time_interval='month',
-                                       start_time='2022-01-01 00:00:00', end_time='2022-03-31 23:59:00')
+    data_parameters = BoxPlotConstants(file_path=r'E:/IDAT', sites=['BSE', 'LUR', 'ECC', 'CCF'],
+                                       species='pm10', plot_type='quarterly report', bin_time_interval='month',
+                                       start_time='2022-04-01 00:00:00', end_time='2022-06-30 23:59:00',
+                                       zero_filter=False)
     # ending dates of each quarter: q1: 03-31 23:59:00, q2: 06-30 23:59:00,
     # q3: 09-30 23:59:00, q4: 12-31 23:59:00,
 

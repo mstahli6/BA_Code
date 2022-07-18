@@ -354,6 +354,7 @@ def csv_import_func(file_paths, sites, header_num=1):
     for path in file_paths:
         data = pd.read_csv(path, header=header_num)
         data['time'] = pd.to_datetime(data['time'], unit='s')
+        data['time'] = data['time'].dt.round('1min')
         if active_site in path and path != file_paths[-1]:
             df_list.append(data)
         elif active_site not in path and path != file_paths[-1]:
@@ -725,6 +726,28 @@ def zero_filter_func(combine_data):
         df = df.reset_index()
         filtered_combine_data.append(df)
     return filtered_combine_data
+
+
+def box_zero_filter_func(combine_data):
+    """
+    Used to replace all 0 and negative values in a dataframe with NaN's
+
+    Parameters
+    __________
+    combine_data : objects
+        a combine site dataframes you want to replace 0 and negative vales in.
+
+    Returns
+    ________
+    object
+         returns df with 0 and negative values replaced with NaN's
+    """
+    for col in combine_data.columns:
+        try:
+            combine_data[col] = combine_data[col].mask(combine_data[col] <= 0)
+        except:
+            continue
+    return combine_data
 
 
 def wind_ready_export_func(data_parameters, combine_data):
