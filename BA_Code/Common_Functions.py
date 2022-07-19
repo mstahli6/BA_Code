@@ -764,10 +764,12 @@ def wind_ready_export_func(data_parameters, combine_data):
     Returns
     ________
     None
-         exports the data to out directory specified in the data_parameters object.
+         exports the data to out directory specified in the data_parameters object.  With wsp data removed above filter
+         value
     """
     num = 0
     for df in combine_data:
+        df = df.loc[df['wsp'] > data_parameters.wsp_filter]
         df.to_csv(data_parameters.export_dir + '\\' + data_parameters.sites[num] + '_' +
                   data_parameters.species + '_' + data_parameters.start_time[:10] + '__' +
                   data_parameters.end_time[:10] + '_Wind_Plot_Ready.csv', index=False, encoding='utf-8')
