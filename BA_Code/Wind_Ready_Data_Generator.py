@@ -47,11 +47,11 @@ def main():
     main function for running Wind_Ready_Data_Generator script.  Script instanciates WindReadyConstants class.
 
     This script takes BA quarterly CSV_out files as inputs and produces CSV files ready to be used by R studios OpenAir
-    package to make heat plots and pollution rose figures.  It does this by reading in combining met data with
+    package to make heat plots and pollution rose figures.  It does this by reading in and combining met data with
     BA species data.  It also has a built in filtering function that can be applied or not as needed.  Multiple site
     outputs can be produced at the same time.
     """
-    data_parameters = WindReadyConstants(file_path=r'E:/IDAT', sites=['BRZ'],
+    data_parameters = WindReadyConstants(file_path=r'E:/IDAT', sites=['BNP'],
                                          species='ch4', start_time='2017-06-08 00:00:00',
                                          end_time='2022-07-11 00:0:00', wsp_filter=0, methane_match=False,
                                          zero_filter=False, export_dir='E:\Ready for wind plot dir')
@@ -75,6 +75,9 @@ def main():
     # slicing the df's to the correct time interval
     wind_list = [df_timeloc_func(df, data_parameters.start_time, data_parameters.end_time) for df in wind_list]
     # slicing the df's to the correct time interval
+
+    wind_list = wind_column_correction_func(wind_list)
+    # fixing wind column names if needed
 
     if data_parameters.methane_match is True and data_parameters.species in VOC_LIST:
         # trigger this statment if you want to combine VOC and Methane data

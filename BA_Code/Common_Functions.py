@@ -802,3 +802,27 @@ def quarter_loc_func(quarter_year):
     else:
         good_months = [10, 11, 12]
     return good_months, quarter
+
+
+def wind_column_correction_func(wind_list):
+    """
+    this function replaces 'wsp_avg_ms' & 'wdr_avg' headers with 'wsp' & 'wdr' for all df's in a list of df's
+
+    Parameters
+    __________
+    wind_list : list of objects
+        list of all met df's imported
+
+    Returns
+    ________
+    list of objects
+        returns list of df's with unwanted header names replaced
+    """
+    header_correction_list = []
+    for df in wind_list:
+        if 'wsp_avg_ms' in df.columns and 'wdr_avg' in df.columns:
+            df = df.rename(columns={"wsp_avg_ms": "wsp", "wdr_avg": "wdr"})
+            header_correction_list.append(df)
+        else:
+            header_correction_list.append(df)
+    return header_correction_list
