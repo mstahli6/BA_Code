@@ -374,31 +374,41 @@ def csv_import_func(file_paths, sites, header_num=1):
 
     combine_data_list = []
     for lst in data_list:
-        data = lst[0]
+        # data = lst[0]
         count = 0
+        data_list_1 = []
+        data_list_2 = []
+        two_sets_of_data = False
         for df in lst:
             if count == 0:
+                data_list_1.append(df)
+                count += 1
+            elif df.columns[1] in data_list_1[0].columns:
+                data_list_1.append(df)
                 count += 1
             else:
-                if (df['time'][45] in data['time'].values) or (df['time'].iat[-45] in data['time'].values):
-                    # print('yes')
-                    data = pd.merge(data, df, on='time', how='outer')
-                else:
-                    # print('no')
-                    data = pd.concat([data, df])
-                    data = data.sort_values(by=['time'])
+                two_sets_of_data = True
+                data_list_2.append(df)
+                count += 1
 
-        duplicate_columns = [column for column in data.columns if '_x' in column]
+        if len(data_list_1) == 1:
+            data1 = data_list_1[0]
+        else:
+            data1 = pd.concat(data_list_1)
 
-        if len(duplicate_columns) > 0:
-            for column in duplicate_columns:
-                columny = column[:-2] + '_y'
-                data[column] = data[column].fillna(-999)
-                data[columny] = data[columny].fillna(-999)
-                data[column[:-2]] = data[columny] + data[column] + 999
-                data = data.drop(columns=[column, columny])
-                data[column[:-2]] = data[column[:-2]].replace(0, np.NaN)
+        if two_sets_of_data:
+            if len(data_list_2) == 1:
+                data2 = data_list_2[0]
+            else:
+                data2 = pd.concat(data_list_2)
+            data = pd.merge(data1, data2, on='time', how='outer')
+        else:
+            data = data1
+
+        data = data.sort_values(by=['time'])
+
         combine_data_list.append(data)
+
     return combine_data_list
 
 
