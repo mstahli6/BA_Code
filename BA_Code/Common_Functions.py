@@ -836,3 +836,25 @@ def wind_column_correction_func(wind_list):
         else:
             header_correction_list.append(df)
     return header_correction_list
+
+
+def lat_lon_column_func(combine_data, data_parameters):
+    """
+    this function adds latitude "lat" and longitude "lon" columns to each df based on site
+
+    Parameters
+    __________
+    combine_data : list of objects
+        list of all combine df's (one for each site)
+    data_parameters : object
+        class object storing parameters and constants for making windrose ready files
+
+    Returns
+    ________
+    list of objects
+        returns list of df's with lat and lon columns added specific to each site's combine df
+    """
+    for i in range(len(data_parameters.sites)):
+        combine_data[i]['lat'] = LAT_LON_DICT.get(data_parameters.sites[i])[0]
+        combine_data[i]['lon'] = LAT_LON_DICT.get(data_parameters.sites[i])[1]
+    return combine_data

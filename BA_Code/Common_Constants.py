@@ -5,9 +5,10 @@ VOC_CARBON_DICT = {'ethane': 2, 'ethene': 2,
                    'n-octane': 8, 'toluene': 7, 'ethyl-benzene': 8,
                    'm&p-xylene': 8, 'o-xylene': 8, 'cyclopentane': 5, 'acetone': 3, 'acetaldehyde': 2}
 
-LAT_LON_DICT = {"BNP": '39.981 -105.006', "BLV": '39.979 -105.043', "BSE": '39.984 -105.037', "LMA": '40.160 -105.159',
-                "LLG": ['none'], "LUR": '40.176 -105.048',
-                "BRZ": '40.070 -105.220', "CCF": ['39.812770', '-104.948218'], "ECC": ['none'], }
+LAT_LON_DICT = {"BNP": ['39.981', '-105.006'], "BLV": ['39.979', '-105.043'], "BSE": ['39.984', '-105.037'],
+                "LMA": ['40.160', '-105.159'], "LLG": ['40.1607', '-105.14614'], "LUR": ['40.176', '-105.048'],
+                "BRZ": ['40.070', '-105.220'], "CCF": ['39.81259', '-104.94391'], "ECC": ['40.04022', '-105.05208'],
+                "CCM": ['39.78239', '-104.96050']}
 
 NAME_DICT = {'co2': 'Carbon Dioxide', 'co2_ppm': 'Carbon Dioxide', 'co': 'Carbon Monoxide', 'ch4': 'Methane',
              'h2s': 'Hydrogen Sulfide', 'pm10': 'PM 10', 'pm2_5': 'PM 2.5',

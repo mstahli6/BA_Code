@@ -111,6 +111,9 @@ def main():
         combine_data = zero_filter_func(combine_data)
         # function that does the filtering
 
+    combine_data = lat_lon_column_func(combine_data, data_parameters)
+    # adding lat and lon columns
+
     wind_ready_export_func(data_parameters, combine_data)
     # export wind ready CSV files to you out dir
 
