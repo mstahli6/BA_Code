@@ -20,7 +20,7 @@ NAME_DICT = {'co2': 'Carbon Dioxide', 'co2_ppm': 'Carbon Dioxide', 'co': 'Carbon
              'n-octane': 'n-Octane', 'toluene': 'Toluene', 'toulene': 'Toluene', 'ethyl-benzene': 'Ethylbenzene',
              'm&p-xylene': 'm&p-Xylene', 'o-xylene': 'o-Xylene', 'solr': 'Solar Radiation', 'temp_f': 'Temperature',
              'temp_c': 'Temperature', 'relh': 'Relative Humidity', 'wsp_avg_ms': 'Wind Speed', 'wsp': 'Wind Speed',
-             'wdr_avg': 'Wind Direction', 'wdr': 'Wind Direction'}
+             'wdr_avg': 'Wind Direction', 'wdr': 'Wind Direction', 'radon': 'Radon'}
 
 UNIT_DICT = {'co2': '(ppm)', 'co2_ppm': '(ppm)', 'co': '(ppb)', 'ch4': '(ppb)', 'h2s': '(ppb)', 'pm10': '(μg/m³)',
              'pm2_5': '(μg/m³)', 'o3': '(ppb)', 'no': '(ppb)', 'nox': '(ppb)', 'ethane': '(ppb)', 'ethene': '(ppb)',
@@ -32,7 +32,7 @@ UNIT_DICT = {'co2': '(ppm)', 'co2_ppm': '(ppm)', 'co': '(ppb)', 'ch4': '(ppb)', 
              'acetaldehyde': '(ppb)',
              'm&p-xylene': '(ppb)', 'o-xylene': '(ppb)', 'solr': '(W/m²)', 'temp_f': '(°F)', 'temp_c': '(°C)',
              'relh': '(%RH)', 'wsp_avg_ms': '(m/s)', 'wsp': '(m/s)', 'wdr_avg': '(Degrees)',
-             'wdr': '(Degrees)'}
+             'wdr': '(Degrees)', 'radon': '(Bq/m³)'}
 
 COLOR_DICT = {"BNP": '#70a597', "BLV": '#70a597', "BSE": '#0CF215', "LMA": '#E84B10', "LLG": '#E84B10',
               "LUR": '#B10CF2',

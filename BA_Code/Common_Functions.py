@@ -247,6 +247,8 @@ def file_path_generator_func(file_path, sites, species, start_time, end_time):
         path_species = 'nox'
     elif species == 'h2s' or species == 'so2':
         path_species = 'met'
+    elif species == 'radon':
+        path_species = 'radon'
     else:
         print('species not recognized')
 
@@ -594,6 +596,103 @@ def voc_wind_pairing_func(met_df,
         data = data.rename(columns={'avg_wdr': 'wdr', 'avg_wsp': 'wsp'})
     return data
 
+def radon_wind_pairing_func(met_df, radon_df):
+    """
+    This function is meant to pair met and VOC data together (can also add methane data if needed)
+
+    The function averages the met data over the 10 minute GC VOC sampling interval and places the data point at the
+    end of the interval.  Wind direction data is averaged using a special method since it has a circular scale
+    (0 to 360).  Methane may also be included in the averaged interval if it is present in the met data.
+
+    Parameters
+    __________
+    met_df : object
+        dataframe containing met data
+    voc_df : object
+        dataframe containing VOC data
+
+    Returns
+    -------
+    object
+        returns a dataframe with merged radon and met data
+    """
+    # imput met df and voc df returns merged df with average windspeed and durection over voc sampaling interval
+    radon_df['time'] = radon_df['time'].dt.round('1min')
+    bool_list = met_df['time'].isin(radon_df['time'])
+    met_df['bool'] = bool_list
+    data = pd.merge(radon_df, met_df, on='time', how='outer')
+    data = data.set_index(['time'])  # sorting index by date
+    data = data.sort_index()
+    data = data.reset_index()
+    ind_bool = data.loc[data['bool'] == True]
+    goodind = ind_bool.index.tolist()
+    data['wdr'] = data['wdr'].astype(float)  # converting wdr and wsp into floating point values for later functions
+    data['wsp'] = data['wsp'].astype(float)
+
+    if 'wsp_avg_ms' in list(data.columns) or 'wdr_avg' in list(data.columns):
+        data = data.rename(columns={'wsp_avg_ms': 'wsp', 'wdr_avg': 'wdr'})
+
+    data['wdr_x'] = np.sin((data['wdr'] * np.pi / 180))  # converting wdr into east-west and north-south components
+    data['wdr_y'] = np.cos((data['wdr'] * np.pi / 180))
+
+    # creating list of lists with each nested list comprised of index values for averaging
+    avg_inds_list = []
+    for ind in goodind:
+        num = 0
+        ind_buffer_list = []
+        while num < 10:
+            ind_buffer_list.append(ind-num)
+            num += 1
+        avg_inds_list.append(ind_buffer_list)
+
+    # grabbing relivant wsp, wdr, and time data to do averaging
+    avg_wsp_list = []
+    avg_wdr_list = []
+    time_interval_list = []
+    for lst in avg_inds_list:
+        wdr_x_list = []
+        wdr_y_list = []
+        wsp_list = []
+        for ind in lst:
+            wdr_x_list.append(data.iloc[ind]['wdr_x'])
+            wdr_y_list.append(data.iloc[ind]['wdr_y'])
+            wsp_list.append(data.iloc[ind]['wsp'])
+            if ind == lst[0]:
+                time_interval_list.append(data.iloc[ind]['time'])
+
+        avg_wsp_list.append(mean(wsp_list))
+        # getting avg wsp for each interval_group
+
+        # calculating wdr average for each group
+        wdr_x_tot = sum(wdr_x_list)
+        wdr_y_tot = sum(wdr_y_list)
+        dev = (wdr_x_tot / wdr_y_tot)
+        ark = (np.arctan(dev))
+        avg = (ark * 57.2958)
+        if wdr_x_tot > 0 and wdr_y_tot > 0:  # if loop used to determin which quadrent wind direction data fit in
+            avg_wdr_list.append(avg)
+        elif wdr_x_tot > 0 and wdr_y_tot < 0:
+            avg2nd = (avg + 180)
+            avg_wdr_list.append(avg2nd)
+        elif wdr_x_tot < 0 and wdr_y_tot < 0:
+            avg3rd = (avg + 180)
+            avg_wdr_list.append(avg3rd)
+        elif wdr_x_tot < 0 and wdr_y_tot > 0:
+            avg4th = (avg + 360)
+            avg_wdr_list.append(avg4th)
+        else:
+            avg_wdr_list.append(np.nan)
+
+    # created a combine df and merging it with the radon df
+    combine_df = pd.DataFrame()
+    combine_df['wdr'] = avg_wdr_list
+    combine_df['wsp'] = avg_wsp_list
+    combine_df['time'] = time_interval_list
+
+    combine_df = pd.merge(combine_df, radon_df, on='time', how='outer')
+
+    return combine_df
+
 
 def met_methane_combine_func(data_parameters, wind_list, methane_list):
     """
@@ -684,6 +783,32 @@ def met_voc_combine_func(data_parameters, wind_list, data_list):
         combine_data.append(data)
     return combine_data
 
+def met_radon_combine_func(data_parameters, wind_list, data_list):
+    """
+    combine voc data with met data (returns list with combened df's)
+
+    uses voc_wind_pairing_func to combine voc's with met data on VOC sampling interval.
+    adds benz_tol, pro_eth, in_pent, and in_bute  columns.
+
+    Parameters
+    ----------
+    data_parameters : object
+        class object storing parameters and constants for making windrose ready files
+    wind_list : list of objects
+        list of met df's
+    data_list : list of objects
+        list of VOC df's
+
+    Returns
+    --------
+    list of objects
+        list of combine data frames with voc's and met data
+    """
+    combine_data = []
+    for i in range(len(data_parameters.sites)):  # makeing voc ratio columns
+        data = radon_wind_pairing_func(wind_list[i], data_list[i])
+        combine_data.append(data)
+    return combine_data
 
 def met_non_voc_combine_func(data_parameters, wind_list, data_list):
     """
