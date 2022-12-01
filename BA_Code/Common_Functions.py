@@ -256,11 +256,11 @@ def file_path_generator_func(file_path, sites, species, start_time, end_time):
         file_paths = []
         for site in sites:
             if site == 'BSE' or site == 'CCF' or site == 'ESF' or site == 'CCM' or site == 'LUR':
-                file_paths.append(file_path + '\\' + site + '\\' + 'met\\')
+                file_paths.append(file_path + '/' + site + '/' + 'met/')
             else:
-                file_paths.append(file_path + '\\' + site + '\\' + path_species + '\\')
+                file_paths.append(file_path + '/' + site + '/' + path_species + '/')
     else:
-        file_paths = [(file_path + '\\' + site + '\\' + path_species + '\\') for site in sites]
+        file_paths = [(file_path + '/' + site + '/' + path_species + '/') for site in sites]
 
     all_files = []
     for file_path in file_paths:
@@ -308,7 +308,7 @@ def wind_file_path_generator_func(file_path, sites, start_time, end_time):
 
     wind_paths = []
     for site in sites:
-        wind_paths.append(file_path + '//' + site + '//met')
+        wind_paths.append(file_path + '/' + site + '/met')
 
     all_files = []
     for file_path in wind_paths:
